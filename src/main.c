@@ -22,4 +22,6 @@ int main(void)
     printf("%s", current->rchar);
     current = current->next;
   }
+
+  rbim_output_file(root, "test.c");
 }

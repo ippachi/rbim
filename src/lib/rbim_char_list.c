@@ -59,17 +59,16 @@ void rbim_concat_rchars(struct rbim_char_list **root, struct rbim_char_list *hea
   current->next = head;
 }
 
-struct rbim_char_list *rbim_buf(struct rbim_char_list *ref, char *buf){
+void rbim_buf(struct rbim_char_list **ref, char *buf){
   int str_len = 0;
-  struct rbim_char_list *current = ref;
-  while(current != NULL && str_len < BUF_SIZE){
-    char c[MAX_CHAR_SIZE];
-    int len = mblen(current->rchar);
-    strcpy(c, current->rchar);
-    c[len] = '';
-    current = current->next;
+  while(*ref != NULL && str_len < BUF_SIZE){
+    sprintf(buf, "%s%s", buf, (*ref)->rchar);
+    str_len += strlen((*ref)->rchar);
+    if(str_len >= BUF_SIZE){
+      return;
+    }
+    *ref = (*ref)->next;
   }
-  return current;
 }
 
 void rbim_output_file(struct rbim_char_list *root, char *filename){
@@ -78,7 +77,8 @@ void rbim_output_file(struct rbim_char_list *root, char *filename){
   struct rbim_char_list *current;
   current = root;
   while(current != NULL){
-    current = rbim_buf(current, buf);
+    memset(buf, '\0', sizeof(buf));
+    rbim_buf(&current, buf);
     fputs(buf, fp);
   }
 }
